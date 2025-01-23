@@ -10,7 +10,7 @@ const News = ({ category = 'general', pageSize = 16, setProgress, searchQuery })
   const [page, setPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
 
-  const APIKey = import.meta.env.VITE_API_KEY;
+  const APIKey = import.meta.env.VITE_API_KEY; // Make sure your API Key is set in Vercel's environment variables
 
   useEffect(() => {
     document.title = searchQuery
@@ -26,20 +26,26 @@ const News = ({ category = 'general', pageSize = 16, setProgress, searchQuery })
     try {
       setProgress(0);
       setLoading(true);
-
-      const url = searchQuery
-        ? `https://newsapi.org/v2/everything?q=${searchQuery}&apiKey=${APIKey}&page=${page}&pageSize=${pageSize}`
-        : `https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${APIKey}&page=${page}&pageSize=${pageSize}`;
-
-      const data = await fetch(url);
+  
+      const url = `/api/fetchNews?searchQuery=${searchQuery || ''}&category=${category}&page=${page}&pageSize=${pageSize}&APIKey=${APIKey}`;
+      const response = await fetch(url);
+  
       setProgress(30);
-
-      const parsedData = await data.json();
+  
+      if (!response.ok) {
+        throw new Error(`Failed to fetch news: ${response.statusText}`);
+      }
+  
+      const parsedData = await response.json();
+  
       setProgress(50);
-
-      console.log("data", parsedData);
-      const fetchedArticles = parsedData.articles || [];
-      setArticles(fetchedArticles);
+  
+      if (!parsedData.articles) {
+        throw new Error('Invalid data structure from API');
+      }
+  
+      console.log('Fetched Data:', parsedData);
+      setArticles(parsedData.articles || []);
       setTotalResults(parsedData.totalResults || 0);
       setProgress(100);
       setLoading(false);
@@ -48,14 +54,13 @@ const News = ({ category = 'general', pageSize = 16, setProgress, searchQuery })
       setLoading(false);
     }
   };
+  
 
   const fetchMoreData = async () => {
     const nextPage = page + 1;
 
     try {
-      const url = searchQuery
-        ? `https://newsapi.org/v2/everything?q=${searchQuery}&apiKey=${APIKey}&page=${nextPage}&pageSize=${pageSize}`
-        : `https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${APIKey}&page=${nextPage}&pageSize=${pageSize}`;
+      const url = `/api/fetchNews?searchQuery=${searchQuery || ''}&category=${category}&page=${nextPage}&pageSize=${pageSize}&APIKey=${APIKey}`;
 
       const data = await fetch(url);
       const parsedData = await data.json();
