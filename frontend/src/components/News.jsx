@@ -13,68 +13,89 @@ const News = ({ category = 'general', pageSize = 16, setProgress, searchQuery })
   const APIKey = import.meta.env.VITE_API_KEY;
 
   useEffect(() => {
-    // Dynamic document title based on category and search query
-    const title = searchQuery ? `${category} - Search: ${searchQuery}` : `${category} - NEWSamachaar`;
-    document.title = title;
+    document.title = searchQuery
+      ? `${category} - Search Results for "${searchQuery}"`
+      : `${category} - NEWSamachaar`;
 
-    // Fetch news whenever searchQuery or category changes
-    fetchNews();
-  }, [searchQuery, category]); // Re-fetch when searchQuery or category changes
+    setArticles([]); // Clear previous articles when query or category changes
+    setPage(1); // Reset page
+    fetchNews(); // Fetch news for the new state
+  }, [searchQuery, category]);
 
   const fetchNews = async () => {
-    setProgress(0);
+    try {
+      setProgress(0);
+      setLoading(true);
 
-    const url = searchQuery
-      ? `https://newsapi.org/v2/everything?q=${searchQuery}&apiKey=${APIKey}&page=${page}&pageSize=${pageSize}`
-      : `https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${APIKey}&page=${page}&pageSize=${pageSize}`;
+      const url = searchQuery
+        ? `https://newsapi.org/v2/everything?q=${searchQuery}&apiKey=${APIKey}&page=${page}&pageSize=${pageSize}`
+        : `https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${APIKey}&page=${page}&pageSize=${pageSize}`;
 
-    setLoading(true);
-    const data = await fetch(url);
-    setProgress(30);
-    const parsedData = await data.json();
-    setProgress(50);
+      const data = await fetch(url);
+      setProgress(30);
 
-    setArticles(parsedData.articles);
-    setTotalResults(parsedData.totalResults);
-    setLoading(false);
-    setProgress(100);
+      const parsedData = await data.json();
+      setProgress(50);
+
+      const fetchedArticles = parsedData.articles || [];
+      setArticles(fetchedArticles);
+      setTotalResults(parsedData.totalResults || 0);
+
+      setProgress(100);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching news:', error);
+      setLoading(false);
+    }
   };
 
   const fetchMoreData = async () => {
     const nextPage = page + 1;
-    const url = searchQuery
-      ? `https://newsapi.org/v2/everything?q=${searchQuery}&apiKey=${APIKey}&page=${nextPage}&pageSize=${pageSize}`
-      : `https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${APIKey}&page=${nextPage}&pageSize=${pageSize}`;
 
-    const data = await fetch(url);
-    const parsedData = await data.json();
+    try {
+      const url = searchQuery
+        ? `https://newsapi.org/v2/everything?q=${searchQuery}&apiKey=${APIKey}&page=${nextPage}&pageSize=${pageSize}`
+        : `https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${APIKey}&page=${nextPage}&pageSize=${pageSize}`;
 
-    // Avoid overwriting previous data, using callback function to update state
-    setArticles((prevArticles) => [...prevArticles, ...parsedData.articles]);
-    setTotalResults(parsedData.totalResults);
-    setPage(nextPage);
+      const data = await fetch(url);
+      const parsedData = await data.json();
+
+      const fetchedArticles = parsedData.articles || [];
+      setArticles((prevArticles) => [...prevArticles, ...fetchedArticles]);
+      setTotalResults(parsedData.totalResults || 0);
+      setPage(nextPage);
+    } catch (error) {
+      console.error('Error fetching more data:', error);
+    }
   };
 
   return (
     <div className="container">
-      <h1 className="container d-flex justify-content-center" style={{ marginTop: '90px' }}>
-        NEWSamachaar - Top {category} headlines
+      <h1 className="text-center" style={{ marginTop: '90px' }}>
+        NEWSamachaar - Top {category} Headlines
       </h1>
 
       <InfiniteScroll
         className="container"
         dataLength={articles.length}
         next={fetchMoreData}
-        hasMore={articles.length < totalResults}
+        hasMore={articles.length < totalResults && !loading}
         loader={<Spinner />}
       >
         <div className="row">
+          {articles.length === 0 && !loading && (
+            <p className="text-center">No articles found for "{searchQuery}"</p>
+          )}
           {articles.map((element, index) => (
             <div className="col-md-3 my-3" key={index}>
               <Newsitem
-                title={element.title && element.title.length >= 45 ? `${element.title.slice(0, 45)}...` : element.title || 'Title not available'}
-                description={element.description && element.description.length >= 60 ? `${element.description.slice(0, 60)}...` : element.description || 'Description not available'}
-                imageURL={element.urlToImage}
+                title={element.title?.length >= 45 ? `${element.title.slice(0, 45)}...` : element.title || 'No Title'}
+                description={
+                  element.description?.length >= 60
+                    ? `${element.description.slice(0, 60)}...`
+                    : element.description || 'No Description'
+                }
+                imageURL={element.urlToImage || 'https://via.placeholder.com/150'}
                 newsURL={element.url}
                 author={element.author}
                 date={element.publishedAt}
