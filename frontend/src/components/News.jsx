@@ -37,10 +37,10 @@ const News = ({ category = 'general', pageSize = 16, setProgress, searchQuery })
       const parsedData = await data.json();
       setProgress(50);
 
+      console.log("data", parsedData);
       const fetchedArticles = parsedData.articles || [];
       setArticles(fetchedArticles);
       setTotalResults(parsedData.totalResults || 0);
-
       setProgress(100);
       setLoading(false);
     } catch (error) {
