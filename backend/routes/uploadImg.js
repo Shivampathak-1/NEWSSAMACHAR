@@ -24,12 +24,12 @@ router.post("/uploadImg",[fetchUser,upload.single('profilePic')] ,async(req, res
       return;
     }
     u.set({
-        profile_image: `http://127.0.0.1:3001/image/${req.file.filename}`
+        profile_image: `https://newssamachar.onrender.com/image/${req.file.filename}`
       })
       await u.save();
     res.json({
       success:1,
-      profile_image: `http://127.0.0.1:3001/image/${req.file.filename}`
+      profile_image: `https://newssamachar.onrender.com/image/${req.file.filename}`
     })
   } catch (error) {
     

@@ -8,7 +8,7 @@ function Profile() {
     const [imagePreview, setImagePreview] = useState(null);
 
     useEffect(() => {
-        fetch("http://127.0.0.1:3001/auth/fetchUser", {
+        fetch("https://newssamachar.onrender.com/auth/fetchUser", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -37,7 +37,7 @@ function Profile() {
         const formData = new FormData();
         formData.append('profilePic', image);
         try {
-            await fetch("http://127.0.0.1:3001/uploads/uploadImg", {
+            await fetch("https://newssamachar.onrender.com/uploads/uploadImg", {
                 method: 'POST',
                 body: formData,
                 headers: { "auth-token": window.localStorage.getItem("token") }

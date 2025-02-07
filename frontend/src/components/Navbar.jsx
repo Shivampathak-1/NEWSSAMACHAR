@@ -12,7 +12,7 @@ const Navbar = ({ setSearchQuery }) => {
 
   useEffect(() => {
     if (loggedIn && window.localStorage.getItem('token')) {
-      fetch('http://127.0.0.1:3001/auth/fetchUser', {
+      fetch('https://newssamachar.onrender.com/auth/fetchUser', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

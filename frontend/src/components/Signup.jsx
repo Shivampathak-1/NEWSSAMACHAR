@@ -22,9 +22,9 @@ function Signup() {
       gender: credential.gender,
       password: credential.password,
       confirmPass: credential.confirmPass,
-      profile_image: "http://127.0.0.1:3001/image/user.png",
+      profile_image: "https://newssamachar.onrender.com/image/user.png",
     };
-    const response = await fetch("http://127.0.0.1:3001/auth/signup", {
+    const response = await fetch("https://newssamachar.onrender.com/auth/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

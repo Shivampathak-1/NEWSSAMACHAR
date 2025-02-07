@@ -11,7 +11,7 @@ function Login() {
       email: credential.email,
       password: credential.password,
     };
-    const response = await fetch("http://127.0.0.1:3001/auth/login", {
+    const response = await fetch("https://newssamachar.onrender.com/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
