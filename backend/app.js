@@ -15,7 +15,7 @@ const corsOption = {
 }
 
 // database connection
-mongoose.connect("mongodb://127.0.0.1:27017/NewsSamachaar")
+mongoose.connect("mongodb+srv://shivampathak5566677:M9PqMRpbKnymPReO@newssamachar.k6fxk.mongodb.net/?retryWrites=true&w=majority&appName=NewsSamachar")
 app.use(cors(corsOption))
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
