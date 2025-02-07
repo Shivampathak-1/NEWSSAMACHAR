@@ -4,6 +4,9 @@ import Navbar from './components/Navbar';
 import News from './components/News';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LoadingBar from 'react-top-loading-bar';
+import Login from './components/Login';
+import Signup from './components/Signup';
+import Profile from './components/Profile';
 
 const App = () => {
   const [progress, setProgress] = useState(0);
@@ -51,6 +54,18 @@ const App = () => {
           <Route
             path="/technology"
             element={<News setProgress={setProgress} key="technology" category="technology" searchQuery={debouncedSearch} />}
+          />
+          <Route
+            path="/login"
+            element={<Login/>}
+          />
+          <Route
+            path="/signup"
+            element={<Signup/>}
+          />
+          <Route
+            path="/profile"
+            element={<Profile/>}
           />
         </Routes>
       </Router>
